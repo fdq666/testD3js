@@ -8,28 +8,12 @@
 
         h1 {
             background-color: #2a5599;
-            /* TODO 1
-            change the text to white and add a padding of 5px
-            2 lines of code
-            */
             color: white;
             padding: 5px;
         }
-
-        /* TODO 2
-        Add code to show a black border of 1px around all SVGs elements in the page
-        1-3 lines of code
-        */
-
         .mainView svg {
             border: 1px solid black;
         }
-
-        /* TODO 3
-         - Use the "display flex" feature from to show the items from class `mainView` side by side 
-         1-3 lines of cide
-        */
-
         .mainView {
             display: flex;
         }
@@ -47,6 +31,7 @@
             <h2>Airlines</h2>
             <svg id="AirlinesChart"></svg>
         </div>
+        
         <div>
             <h2>Airports</h2>
             <svg id="Map"></svg>
@@ -57,7 +42,7 @@
 </body>
 <!-- Add this section to your file -->
 <script>
-    // All your javascript code will go here
+  
     // python3 -m http.server
     
     // Creating a variable to store our data
@@ -78,40 +63,20 @@ function loadData() {
 //Preparing The Data
 // Recuperation de ID, AirlineID, AirlineName,
     function groupByAirline(data) {
-        /*
-        ID, AirlineID, AirlineName, 
-
-        AirlineCountry,SourceAirportID,
-        SourceAirportCode,SourceAirport,SourceCity,
-        SourceCountry,SourceLatitude,SourceLongitude,
-        DestAirportID,DestCode,DestAirport,DestCity,DestCountry,DestLatitude,DestLongitude
-
-        1,24,American Airlines,
-        
-        United States,4355,ABE,Lehigh Valley International Airport,Allentown,
-        United States,40.65209961,-75.44080353,3876,CLT,Charlotte Douglas International Airport,
-        Charlotte,United States,35.2140007,-80.94309998
-
-        */
-    
-    // Iterate over each route, producing a dictionary 
-    // where the keys is are the ailines ids 
-    // and the values are the information of the airline.
-    // data est un array
+      
     let result = data.reduce( (result, d) => {
         let currentData = result[d.AirlineID] || {
             "AirlineID": d.AirlineID,
             "AirlineName": d.AirlineName,
             "Count": 0
         }
-        
         currentData.Count += 1; //TODO: Increment the count (number of routes) of ariline.
         
         result[d.AirlineID] = {
-            "AirlineID":d.AirlineID, "AirlineName":d.AirlineName,"Count":currentData.Count
-            
+            "AirlineID":d.AirlineID, 
+            "AirlineName":d.AirlineName,
+            "Count":currentData.Count            
         }//TODO: Save the updated information in the dictionary using the airline id as key.
-
         return result;
     }, {})
 
@@ -129,9 +94,10 @@ function loadData() {
 // Running it
 loadData().then(showData);
 
-
-// BAR _____________________
+/******************************************/
+// SECTION BAR _____________________
 //Part3
+// dessiner les bar des companies
 function drawAirlinesChart(airlines) {
     let config = getAirlinesChartConfig();
     let scales = getAirlinesChartScales(airlines, config);
@@ -139,7 +105,7 @@ function drawAirlinesChart(airlines) {
     drawAxesAirlinesChart(airlines, scales, config);
 }
 
-// Config Chart
+// Placement de Chart
 function getAirlinesChartConfig() {
     let width = 350;
     let height = 400;
@@ -164,7 +130,7 @@ function getAirlinesChartConfig() {
     return { width, height, margin, bodyHeight, bodyWidth, container }
 }
 
-// Scales
+// definition de la taille Scales
 function getAirlinesChartScales(airlines, config) {
     let { bodyWidth, bodyHeight } = config;
     let maximunCount = d3.max( airlines, (airlines) => airlines.Count);  
@@ -185,7 +151,7 @@ function getAirlinesChartScales(airlines, config) {
     return { xScale, yScale }
 }
 
-// Drawing the bars
+// Drawing the bars Charts
 function drawBarsAirlinesChart(airlines, scales, config) {
   let {margin, container} = config; // this is equivalent to 'let margin = config.margin; let container = config.container'
   let {xScale, yScale} = scales
@@ -195,7 +161,7 @@ function drawBarsAirlinesChart(airlines, scales, config) {
       )
 
   let bars = body.selectAll(".bar").data(airlines)
-      //TODO: Use the .data method to bind the airlines to the bars (elements with class bar)
+//TODO: Use the .data method to bind the airlines to the bars (elements with class bar)
 
   //Adding a rect tag for each airline
   bars.enter().append("rect")
@@ -205,49 +171,31 @@ function drawBarsAirlinesChart(airlines, scales, config) {
       //TODO: set the width of the bar to be proportional to the airline count using the xScale
       .attr("fill", "#2a5599")
 
-
-
+// Action sur la bar et selection des lignes de la compagnie
 
 /* ****************************************************** */
 // PLus PartEND ******************************************************
-        .on("mouseenter", function(d ){   
-            //debugger; 
-            d => drawRoutes('d.airlineID') //TODO: call the drawRoutes function passing the AirlineID id 'd'-> d.AirlineID
-            d3.select(this)
-            this.style.fill= "#992a5b"; // <- this is the new code
-            //TODO: change the fill color of the bar to "#992a5b" as a way to highlight the bar. 
-            //Hint: use d3.select(this)
-            console.log(' Moussenter -> return d.AirlineID ::::' , d.AirlineID)
-            return drawRoutes(d.AirlineID);
-            
-        })
-  
-    //drawRoutes(null); //TODO: In this listener, call drawRoutes(null),
-        .on("mouseleave", function(d) { //TODO: Add another listener, this time for mouseleave
-            d3.select(this)
-            this.style.fill= "#2a5599";
-        
-            d => drawRoutes('d.airlineID')
-            d.AirlineID == null;
-            //d => drawRoutes(null);
-        
-        //
-        console.log('ddd',d)
-        
-        //TODO: In this listener, call drawRoutes(null),
-        
-            console.log('MouseLeave -- la route selection : ', d.AirlineID ) 
-        return drawRoutes(null);
-            
-        })
-        //this will cause the function to remove all lines in the chart since there is no airline with the AirlineID == null.
-        //TODO: change the fill color of the bar back to "#2a5599"
+.on("mouseenter", function(d) { // <- this is the new code
+    d => drawRoutes('d.airlineID') //TODO: call the drawRoutes function passing the AirlineID id 'd'
+    d3.select(this)
+    this.style.fill= "#992a5b";//TODO: change the fill color of the bar to "#992a5b" as a way to highlight the bar. Hint: use d3.select(this)
+    return drawRoutes(d.AirlineID);
+})
 
-}
+.on("mouseleave", function(d) {//TODO: Add another listener, this time for mouseleave
+    d => drawRoutes(null)
+    //TODO: In this listener, call drawRoutes(null), 
+    //this will cause the function to remove all lines in the chart since there is no airline withe AirlineID == null.
+    d3.select(this)
+    this.style.fill= "#2a5599"; //TODO: change the fill color of the bar back to "#2a5599"
+    return drawRoutes(null);
+})
 
-// Axes 
+} //end
+
+// Placement des axes de la Chart Axes 
 function drawAxesAirlinesChart(airlines, scales, config){
-  let {xScale, yScale} = scales
+  let {xScale, yScale} = scales;
   let {container, margin, height} = config;
   let axisX = d3.axisBottom(xScale).ticks(5)
 
@@ -258,10 +206,8 @@ function drawAxesAirlinesChart(airlines, scales, config){
     .call(axisX)
 
   let axisY = d3.axisLeft(yScale)
-
   //TODO: Create an axis on the left for the Y scale
   //TODO: Append a g tag to the container, translate it based on the margins and call the axisY axis to draw the left axis.
-
   container.append("g")
     .style("transform", 
         `translate(${margin.left}px,${margin.top}px)`
@@ -270,15 +216,13 @@ function drawAxesAirlinesChart(airlines, scales, config){
 }
 
 // ass4
-
+// ---------------- MAP -------- La partie carte
 // Map Config
 function getMapConfig(){
   let width = 600;
   let height = 400;
   let container = d3.select('#Map'); //TODO: select the svg with id Map
-        container
-            .attr("width", width)
-            .attr("height", height) 
+  container.attr("width", width).attr("height", height) 
      //TODO: set the width and height of the container to be equal the width and height variables.
   return {width, height, container}
 }
@@ -287,7 +231,7 @@ function getMapConfig(){
 function getMapProjection(config) {
   let {width, height} = config;
   let projection = d3.geoMercator(); //TODO: Create a projection of type Mercator.
-        projection.scale(97).translate([width / 2, height / 2 + 20])
+  projection.scale(97).translate([ width / 2, (height / 2) + 20])
             
   store.mapProjection = projection;
   return projection;
@@ -360,7 +304,8 @@ function groupByAirport(data) {
 // Draw Airports
 function drawAirports(airports) {
   let config = getMapConfig(); //get the config
-  let projection = getMapProjection(config) //get the projection
+  let routes = store.routes;
+  let projection = getMapProjection(config); //get the projection
   let container = config.container; //get the container
         
   let circles = container.selectAll("circle");
@@ -386,79 +331,28 @@ function drawAirports(airports) {
 // Drawing Routes
 function drawRoutes(airlineID) {
     //debugger;
-    //let  selectedRoutes=[]
+    
     let routes = store.routes; //TODO: get the routes from store 
-    let projection = store.mapProjection ; // TODO: get the projection from the store 
+    let projection = store.mapProjection ;// TODO: get the projection from the store 
     let container = d3.select("#Map");  //TODO: select the svg with id "Map" (our map container)
   
-   let selectedRoutes = routes.filter( d =>  d.AirlineID == airlineID )
-
-    console.log('drawRoutes -- airlineID -- ', airlineID)
-    console.log( 'drawRoutes: my select route => ', selectedRoutes )
-    console.log( ' <== End my select route')
-    
+    let selectedRoutes = routes.filter( d => d.AirlineID == airlineID )
     let bindedData = container.selectAll("line")
-
         .data(selectedRoutes, d => d.ID) 
         .enter() //TODO: Use the .enter selector to append a line for each new route.
-        .append('line')   
-       
-        .attr( "cx", d => projection([+d.Longitude, +d.Latitude])[0] )
-        .attr( "cy", d => projection([+d.Longitude, +d.Latitude])[1] )
-
-        .attr("x1", d => +d.SourceLongitude )  //TODO: for each line set the start of the line (x1 and y1) 
-        .attr("y1", d => +d.SourceLatitude  ) 
-    
-        .attr("x2", d =>  +d.DestLongitude  )  //TODO: for each line set the end of the line (x2 and y2) 
-        .attr("y2", d =>  +d.DestLatitude  ) 
-
-       
-
-  /* 
-        .attr("x1", d => projection( d.SourceLongitude) )
-        .attr("y1", d => projection( d.SourceLatitude)  )               
-        //to be the position of the source airport (SourceLongitude and SourceLatitude) 
-        //Hint: you can use projection to convert longitude and latitude to x and y.
-        .attr("x2", d => projection( d.DestLongitude)  )
-        .attr("y2", d => projection( d.DestLatitude) ) 
- */     
-            //TODO: for each line set the end of the line (x2 and y2) 
-            //to be the position of the source airport (DestLongitude and DestLongitude)
-
-            /*
-            <line x1="NaN,208.11962258316805" y1="306.771877497738,220" 
-                x2="NaN,206.41202221773747" y2="305.0789081233035,211.52438871168278" 
-                stroke="#992a2a" opacity="0.1"></line>
-
-            <line x1="NaN,NaN" y1="NaN,NaN" x2="NaN,206.41202221773747" 
-            y2="305.0789081233035,211.52438871168278" stroke="#992a2a" opacity="0.1"></line>
-            */
-    
-        .attr("stroke","#992a2a")   //TODO: set the color of the stroke of the line to "#992a2a"
-            
-        .attr("opacity",0.1)    //TODO: set the opacity to 0.1
-        
-        console.log( ' DATA :::: my select route :::', selectedRoutes )
-
-        //TODO: use exit function over bindedData to remove any routes that does not satisfy the filter.
-        //
-        //
-       bindedData.exit().remove()
+        .append("line")             
+            .attr( "cx", d => projection([+d.Longitude, +d.Latitude])[0] )
+            .attr( "cy", d => projection([+d.Longitude, +d.Latitude])[1] )
+            .attr("x1", d => +d.SourceLongitude )  //TODO: for each line set the start of the line (x1 and y1) 
+            .attr("y1", d => +d.SourceLatitude  )         
+            .attr("x2", d =>  +d.DestLongitude  )  //TODO: for each line set the end of the line (x2 and y2) 
+            .attr("y2", d =>  +d.DestLatitude  ) //to be the position of the source airport (DestLongitude and DestLongitude)
+            .attr("stroke","#992a2a")   //TODO: set the color of the stroke of the line to "#992a2a"            
+            .attr("opacity",0.1)    //TODO: set the opacity to 0.1
+            //TODO: use exit function over bindedData 
+        //to remove any routes that does not satisfy the filter.
+    bindedData.exit().remove();
 }
-
-
-
-
-
-// Test The Function
-/*
-Before add interactivity to our application, 
-let's first make sure that the function works as expected. 
-Lets call the function from showDat, 
-pass the ID 24 and see if we get the routes on the map.
-*/
-
-
 
 // Init function
 function showData() {
@@ -472,18 +366,9 @@ function showData() {
 
     let airports = groupByAirport(store.routes);
     drawAirports(airports)
-    //drawRoutes()
-    
-    //drawRoutes(`d.AirlineID`)
- // Test
- //drawRoutes("24") // <- add this line 24
-  
-   
-   /**
-   <line cx="172.2810300409799" cy="156.2319888563056" 
-   x1="NaN,NaN" y1="NaN,NaN" x2="NaN,206.41202221773747" 
-   y2="305.0789081233035,211.52438871168278" stroke="#992a2a" opacity="0.1"></line>
-   */
+
+//drawRoutes("24") // <- add this line 24
+ 
 }
 
 
